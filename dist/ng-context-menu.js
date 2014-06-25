@@ -23,21 +23,39 @@ angular
 
         function open(event, menuElement) {
           menuElement.addClass('open');
+          menuElement = menuElement[0];
 
-          var doc = $document[0].documentElement;
-          var docLeft = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0),
-            docTop = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0),
-            elementHeight = menuElement[0].scrollHeight;
-          var docHeight = doc.clientHeight + docTop,
-            totalHeight = elementHeight + event.pageY,
-            top = Math.max(event.pageY - docTop, 0);
+          // Size available
+          var w = window;
+          var e = w.document.documentElement;
+          var g = w.document.getElementsByTagName('body')[0];
+          var x = w.innerWidth || e.clientWidth || g.clientWidth;
+          var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-          if (totalHeight > docHeight) {
-            top = top - (totalHeight - docHeight);
+          // MenuElement width
+          var sizes  = menuElement.getBoundingClientRect();
+          if(!sizes.height)
+            sizes.height = sizes.bottom - sizes.top;
+          if(!sizes.width)
+            sizes.width = sizes.right  - sizes.left;
+
+          // Total Height
+          var total = {
+            left: event.pageX + sizes.width  + 20,
+            top:  event.pageY + sizes.height + 20,
+          };
+
+          if (total.top > y) {
+            menuElement.style.top = event.pageY - sizes.height +'px';
+          } else {
+            menuElement.style.top = event.pageY+'px';
+          }
+          if (total.left > x) {
+            menuElement.style.left = event.pageX - sizes.width +'px';
+          } else {
+            menuElement.style.left = event.pageX+'px';
           }
 
-          menuElement.css('top', top + 'px');
-          menuElement.css('left', Math.max(event.pageX - docLeft, 0) + 'px');
           opened = true;
         }
 
